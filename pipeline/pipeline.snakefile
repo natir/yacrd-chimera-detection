@@ -1,37 +1,40 @@
-dataset = ["SRR8494940_ont", "SRR8494911_pb", "h_sapiens_chr1", "d_melanogaster_reads": "d_melanogaster_ref", "c_elegans_pb"]
-coverage = [i for i in range (1000, 6000, 1000)]
+
+dataset = ["SRR8494940_ont", "SRR8494911_pb", "h_sapiens_chr1_ont", "d_melanogaster_reads_ont", "c_elegans_pb"]
+coverages = [i for i in range(0, 6)]
 internals = ["1", "0"]
 containments = ["1", "0"]
-  
+# lengths = [i for i in range (1000, 6000, 1000)]
+lengths = [1000]
 
 rule all:
-    [f"yacrd/{reads_name}.yacrd" for reads_name in dataset],
-    [f"yacrd/{reads_name}_cov{cov}_i{i}_c{c}_l{length}_.yacrd"
-     for reads_name in dataset
-     for cov in coverage
-     for i in iternals
-     for c in containments
-    ],
+    input:
+        [f"yacrd/{reads_name}.yacrd" for reads_name in dataset],
+        [f"yacrd/{reads_name}_cov{cov}_i{i}_c{c}_l{length}.yacrd"
+         for reads_name in dataset
+         for cov in coverages
+         for i in internals
+         for c in containments
+         for length in lengths
+        ],
+        [f"mapping/{reads_name}.{config['preset'][reads_name]}.paf" for reads_name in dataset],
     
 rule minimap2_index:
     input:
-        ref = "reference/{name}.fasta"
+        ref = "references/{name}.fasta"
     output:
-        index = "reference/{name}.mmi"
+        index = "references/{name}.{preset}.mmi"
     threads:
         16
-    params:
-        preset = 
     shell:
-        "minimap2 -t {threads} -x {params.preset} -d {output.index} {input.ref}"
+        "minimap2 -t {threads} -x map-{wildcards.preset} -d {output.index} {input.ref}"
 
 
 rule map2ref:
     input:
-        reads = "reads/{reads_name}.fasta"
-        index = lambda wlc: f"references/{config['reads2ref'][wlc.reads_name]}.mmi"
+        reads = "reads/{reads_name}.fasta",
+        index = lambda wlc: f"references/{config['reads2ref'][wlc.reads_name]}.{wlc.preset}.mmi"
     output:
-        mapping = "mapping/{reads_name}.paf"
+        mapping = "mapping/{reads_name}.{preset}.paf"
     threads:
         16
     params:
@@ -59,7 +62,7 @@ rule fpa:
     output:
         filter_ovl = "overlaps/{reads_name}_i{i}_c{c}_l{length}.paf"
     run:
-        cmd = f"fpa -i {wildcards.all_ovl} -o {wilcards.filter_ovl} drop -l {wilcards.length}"
+        cmd = f"fpa -i {input.all_ovl} -o {output.filter_ovl} drop -l {wildcards.length}"
 
         if wildcards.i == "1":
             cmd += " -i"

@@ -2,16 +2,16 @@
   "reads2ref": {
     "SRR8494940_ont": "ref_e_coli_cft073",
     "SRR8494911_pb": "ref_e_coli_cft073",
-    "h_sapiens_chr1": "h_sapiens_chr1_ref",
-    "d_melanogaster_reads": "d_melanogaster_ref",
+    "h_sapiens_chr1_ont": "h_sapiens_chr1_ref",
+    "d_melanogaster_reads_ont": "d_melanogaster_ref",
     "c_elegans_pb": "c_elegans_ref"
   },
   
   "preset": {
     "SRR8494940_ont": "ont",
     "SRR8494911_pb": "pb",
-    "h_sapiens_chr1": "ont",
-    "d_melanogaster_reads": "ont",
-    "c_elegans_pb": "pb"
+    "h_sapiens_chr1_ont": "ont",
+    "d_melanogaster_reads_ont": "ont",
+      "c_elegans_pb": "pb"      
     }
 }
