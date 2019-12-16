@@ -42,12 +42,26 @@ def main(args=None):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("mapping")
+    parser.add_argument("yacrd")
     parser.add_argument("-c", "--circular", type=int, help="if a read map after this position it probably not be a chimera just a read map at the end and begin of genome", default=sys.maxsize)
     
     args = parser.parse_args(args)
 
-    print("{},{}".format(args.mapping, get_nb_chimera(args.mapping, args.circular)))
+    real_chimera = set(get_chimera(args.mapping, args.circular))
+    yacrd_chimera = set(parse_yacrd_report(args.yacrd))
 
+    precision = len(real_chimera & yacrd_chimera) / len(yacrd_chimera)
+    recall = len(real_chimera & yacrd_chimera) / len(real_chimera)
+
+    print(f"{args.yacrd},{precision},{recall},{2 * ((precision * recall) / (precision + recall))}");
+
+def parse_yacrd_report(filename):
+    reader = csv.reader(open(filename, "r"), delimiter='\t')
+
+    for row in reader:
+        if row[0] == "Chimeric":
+            yield row[1]
+    
 def parse_mapping(filename):
     read2length = defaultdict(int)
     read2mapping = defaultdict(list)
@@ -106,9 +120,8 @@ def not_to_fare(len1, len2):
     return max(len1, len2) / max(len1, len2) > 1.1
 
 
-def get_nb_chimera(filename, circular_limit):
+def get_chimera(filename, circular_limit):
     read2length, read2mapping = parse_mapping(filename)
-    chimera = 0
     
     for read, mapping in read2mapping.items():
         
@@ -122,9 +135,7 @@ def get_nb_chimera(filename, circular_limit):
         if any([elt > circular_limit for sublist in pos for elt in sublist]):
             continue
 
-        chimera += 1
-
-    return chimera
+        yield read
 
     
 if __name__ == "__main__":
