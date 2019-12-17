@@ -6,12 +6,18 @@
     "d_melanogaster_reads_ont": "d_melanogaster_ref",
     "c_elegans_pb": "c_elegans_ref"
   },
-  
   "preset": {
     "SRR8494940_ont": "ont",
     "SRR8494911_pb": "pb",
     "h_sapiens_chr1_ont": "ont",
     "d_melanogaster_reads_ont": "ont",
-      "c_elegans_pb": "pb"      
-    }
+    "c_elegans_pb": "pb"
+  },
+    "g_distance": {
+	"SRR8494940_ont": "500",
+	"SRR8494911_pb": "5000",
+	"h_sapiens_chr1_ont": "500",
+	"d_melanogaster_reads_ont": "500",
+	"c_elegans_pb": "800"
+    }	
 }
