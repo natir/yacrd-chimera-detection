@@ -8,6 +8,19 @@ lengths = list(range(0, 1000, 100)) + list(range(1000, 11000, 1000))
 rule all:
     input:
         [f"yacrd/{reads_name}.yacrd" for reads_name in dataset],
+        [f"yacrd/{reads_name}_i{i}_c{c}_l{length}.yacrd"
+         for reads_name in dataset
+         for i in internals
+         for c in containments
+         for length in lengths
+        ],
+        [f"yacrd/{reads_name}_i{i}_c{c}_l{length}_cov{cov}.yacrd"
+         for reads_name in dataset
+         for cov in coverages
+         for i in internals
+         for c in containments
+         for length in lengths
+        ],
         [f"yacrd/{reads_name}_g{config['g_distance'][reads_name]}_i{i}_c{c}_l{length}.yacrd"
          for reads_name in dataset
          for i in internals
