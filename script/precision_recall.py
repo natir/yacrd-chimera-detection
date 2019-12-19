@@ -42,18 +42,21 @@ def main(args=None):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("mapping")
-    parser.add_argument("yacrd")
+    parser.add_argument("yacrd", nargs='*')
     parser.add_argument("-c", "--circular", type=int, help="if a read map after this position it probably not be a chimera just a read map at the end and begin of genome", default=sys.maxsize)
-    
+
     args = parser.parse_args(args)
 
     real_chimera = set(get_chimera(args.mapping, args.circular))
-    yacrd_chimera = set(parse_yacrd_report(args.yacrd))
 
-    precision = len(real_chimera & yacrd_chimera) / len(yacrd_chimera)
-    recall = len(real_chimera & yacrd_chimera) / len(real_chimera)
+    for y in args.yacrd:
+        yacrd_chimera = set(parse_yacrd_report(y))
 
-    print(f"{args.yacrd},{precision},{recall},{2 * ((precision * recall) / (precision + recall))}");
+        y = os.path.split(y)[-1]
+        precision = len(real_chimera & yacrd_chimera) / len(yacrd_chimera)
+        recall = len(real_chimera & yacrd_chimera) / len(real_chimera)
+
+        print(f"{y},{precision},{recall},{2 * ((precision * recall) / (precision + recall))}");
 
 def parse_yacrd_report(filename):
     reader = csv.reader(open(filename, "r"), delimiter='\t')
