@@ -47,6 +47,7 @@ def main(args=None):
 
     args = parser.parse_args(args)
 
+    print("file,precision,recall,F1")
     real_chimera = set(get_chimera(args.mapping, args.circular))
 
     for y in args.yacrd:
